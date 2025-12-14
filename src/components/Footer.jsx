@@ -20,7 +20,7 @@ const Footer = () => {
                             Crafting excellence for your homes and offices since 1998.
                         </p>
                         <div className="flex gap-4">
-                            <a href="#" className="p-2 bg-slate-800 rounded-full hover:bg-blue-600 hover:text-white transition-all">
+                            <a href="https://www.facebook.com/share/1BFcd4iGKW/?mibextid=wwXIfr" className="p-2 bg-slate-800 rounded-full hover:bg-blue-600 hover:text-white transition-all">
                                 <Facebook size={20} />
                             </a>
                             <a href="https://www.instagram.com/kp_furniture_manufacturer?igsh=ZTdoNjVjYjFmM3I%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="p-2 bg-slate-800 rounded-full hover:bg-pink-600 hover:text-white transition-all">
