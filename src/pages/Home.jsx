@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Award, Truck, Hammer, Star } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import { products, categories } from '../data/products';
+import { useProductContext } from '../context/ProductContext';
 
 const Home = () => {
+    const { products, categories } = useProductContext();
     const featuredProducts = products.slice(0, 4);
 
     const heroImages = [

@@ -1,13 +1,13 @@
-import React from 'react';
-import { MessageCircle, ShoppingCart } from 'lucide-react';
+import React, { useState } from 'react';
+import { MessageCircle, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { generateWhatsAppLink } from '../data/products';
 import { useCart } from '../context/CartContext';
-import { useState } from 'react';
 
 const ProductCard = ({ product }) => {
     const whatsappLink = generateWhatsAppLink(product.name);
     const { addToCart } = useCart();
     const [added, setAdded] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const handleAddToCart = () => {
         addToCart(product);
@@ -15,17 +15,57 @@ const ProductCard = ({ product }) => {
         setTimeout(() => setAdded(false), 2000);
     };
 
+    const hasMultipleImages = product.images && product.images.length > 1;
+
+    const nextImage = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+    };
+
+    const prevImage = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setCurrentImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+    };
+
     return (
         <div className="card group flex flex-col h-full bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300">
 
             {/* Image Container */}
-            <div className="relative h-64 overflow-hidden bg-gray-100">
+            <div className="relative h-64 overflow-hidden bg-white group/image">
                 <img
-                    src={product.image}
+                    src={hasMultipleImages ? product.images[currentImageIndex] : product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-blue-600 shadow-sm">
+
+                {hasMultipleImages && (
+                    <>
+                        <button
+                            onClick={prevImage}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md opacity-0 group-hover/image:opacity-100 transition-opacity hover:bg-white"
+                        >
+                            <ChevronLeft size={20} className="text-gray-700" />
+                        </button>
+                        <button
+                            onClick={nextImage}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md opacity-0 group-hover/image:opacity-100 transition-opacity hover:bg-white"
+                        >
+                            <ChevronRight size={20} className="text-gray-700" />
+                        </button>
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                            {product.images.map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === currentImageIndex ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
+
+                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold text-blue-600 shadow-sm z-10">
                     {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
                 </div>
             </div>
@@ -48,8 +88,8 @@ const ProductCard = ({ product }) => {
                         <button
                             onClick={handleAddToCart}
                             className={`btn flex items-center justify-center gap-2 py-3 rounded-xl font-semibold transition-all ${added
-                                    ? 'bg-green-600 text-white shadow-green-100'
-                                    : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-100'
+                                ? 'bg-green-600 text-white shadow-green-100'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-100'
                                 }`}
                         >
                             <ShoppingCart size={18} />

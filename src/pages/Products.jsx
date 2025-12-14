@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'; // Added useEffect
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import { products, categories } from '../data/products';
+import { useProductContext } from '../context/ProductContext';
 import { Filter } from 'lucide-react';
 
 const Products = () => {
+    const { products, categories } = useProductContext(); // Sync with Admin Panel updates
     const [searchParams, setSearchParams] = useSearchParams();
     const categoryParam = searchParams.get('category');
 

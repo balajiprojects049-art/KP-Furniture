@@ -8,6 +8,10 @@ import Contact from './pages/Contact';
 
 import Cart from './pages/Cart';
 
+import { ProductProvider } from './context/ProductContext';
+import AdminLogin from './pages/AdminLogin';
+import AdminPanel from './pages/AdminPanel';
+
 // Scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -21,18 +25,22 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/cart" element={<Cart />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <ProductProvider>
+      <Router>
+        <ScrollToTop />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminPanel />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </ProductProvider>
   );
 }
 
