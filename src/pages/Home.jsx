@@ -141,7 +141,7 @@ const Home = () => {
                                 'sofa-u-shape': "https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&q=80&w=600",
                                 'sofa-3-1-1': "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&q=80&w=600",
                                 'sofa-long': "https://images.unsplash.com/photo-1550226891-ef816aed4a98?auto=format&fit=crop&q=80&w=600",
-                                'cots': "/categories/cots-category.png",
+                                'cots': "/categories/pink-bedroom-interior-with-coral-accents.jpg",
                                 'mattresses': "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&q=80&w=600",
                                 'dining': "https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&q=80&w=600",
                                 'office-tables': "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&q=80&w=600",
