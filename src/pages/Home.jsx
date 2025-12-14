@@ -83,7 +83,7 @@ const Home = () => {
                                 Explore Collection <ArrowRight size={20} />
                             </Link>
                             <a
-                                href="https://wa.me/919490032763"
+                                href="https://wa.me/919490032357"
                                 className="w-full sm:w-auto px-8 py-4 bg-transparent hover:bg-white hover:text-blue-900 text-white border-2 border-white rounded-full font-bold text-lg transition-all flex items-center justify-center"
                             >
                                 Custom Order
@@ -211,7 +211,7 @@ const Home = () => {
                     <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto font-light">
                         We specialize in bringing your unique ideas to life. Stick to your style, not just what's in stock.
                     </p>
-                    <a href="https://wa.me/919490032763" className="btn bg-white text-blue-600 hover:bg-gray-100 hover:shadow-2xl hover:shadow-blue-900/50 px-12 py-5 rounded-full text-xl font-bold transition-all transform hover:-translate-y-1">
+                    <a href="https://wa.me/919490032357" className="btn bg-white text-blue-600 hover:bg-gray-100 hover:shadow-2xl hover:shadow-blue-900/50 px-12 py-5 rounded-full text-xl font-bold transition-all transform hover:-translate-y-1">
                         Start Your Custom Order
                     </a>
                 </div>

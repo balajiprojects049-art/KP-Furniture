@@ -937,7 +937,7 @@ export const products = [
 ];
 
 export const generateWhatsAppLink = (productName, quantity = 1, message = "") => {
-  const phoneNumber = "919490032763"; // Business WhatsApp
+  const phoneNumber = "919490032357"; // Business WhatsApp
   const text = `Hi KP Furniture, I am interested in:\n\n*Product:* ${productName}\n*Quantity:* ${quantity}\n*Message:* ${message}`;
   return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
 };

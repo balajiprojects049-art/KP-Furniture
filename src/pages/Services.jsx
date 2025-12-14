@@ -162,7 +162,7 @@ const Services = () => {
                         <Link to="/contact" className="px-8 py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-lg">
                             Start a Project
                         </Link>
-                        <a href="https://wa.me/919490032763" className="px-8 py-3 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                        <a href="https://wa.me/919490032357" className="px-8 py-3 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
                             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                             Chat on WhatsApp
                         </a>

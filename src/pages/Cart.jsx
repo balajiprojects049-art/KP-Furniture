@@ -7,7 +7,7 @@ const Cart = () => {
     const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
 
     const handleWhatsAppCheckout = () => {
-        const phoneNumber = "919490032763";
+        const phoneNumber = "919490032357";
         let message = "Hi KP Furniture, I would like to place an order for the following items:\n\n";
 
         cart.forEach((item, index) => {

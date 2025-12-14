@@ -61,7 +61,7 @@ const Contact = () => {
                                 <div>
                                     <h3 className="font-bold text-slate-900 text-lg mb-2">Call Us</h3>
                                     <div className="flex flex-col gap-2">
-                                        <a href="tel:9490032763" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">
+                                        <a href="tel:9490032357" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">
                                             +91 94900 32763 <span className="text-xs text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full ml-2">Business</span>
                                         </a>
                                         <a href="tel:9490032357" className="text-slate-600 hover:text-blue-600 font-medium transition-colors">
@@ -139,7 +139,7 @@ const Contact = () => {
                                     </p>
                                 </div>
                                 <a
-                                    href="https://wa.me/919490032763"
+                                    href="https://wa.me/919490032357"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="px-8 py-4 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-lg flex items-center gap-3 shrink-0"
