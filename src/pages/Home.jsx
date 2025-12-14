@@ -196,6 +196,57 @@ const Home = () => {
                 </div>
             </section>
 
+            {/* Meet the Proprietor Section */}
+            <section className="section bg-white">
+                <div className="container">
+                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+                        {/* Image Column */}
+                        <div className="relative">
+                            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                                <img
+                                    src="/venkatesh-proprietor.jpg"
+                                    alt="Venkatesh - Proprietor, KP Furniture"
+                                    className="w-full h-auto object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
+                            </div>
+                            {/* Decorative Element */}
+                            <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-blue-100 rounded-2xl -z-10"></div>
+                            <div className="absolute -top-6 -left-6 w-32 h-32 bg-blue-600/10 rounded-2xl -z-10"></div>
+                        </div>
+
+                        {/* Content Column */}
+                        <div>
+                            <div className="inline-block px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-semibold mb-6">
+                                Meet Our Founder
+                            </div>
+                            <h2 className="heading-lg text-gray-900 mb-6">
+                                Venkatesh
+                                <span className="block text-2xl text-gray-600 font-normal mt-2">Proprietor, KP Furniture</span>
+                            </h2>
+                            <div className="space-y-4 text-gray-600 leading-relaxed">
+                                <p className="text-lg">
+                                    With over two decades of dedication and craftsmanship, Venkatesh has built KP Furniture into one of Guntur's most trusted names in furniture manufacturing.
+                                </p>
+                                <p>
+                                    Since 1998, his vision has been simple yet powerful: to create furniture that combines timeless design with exceptional quality. Every piece that leaves our workshop carries his personal commitment to excellence.
+                                </p>
+                                <p>
+                                    From custom sofas to complete office setups, Venkatesh personally oversees each project, ensuring that every customer receives furniture built to last generations.
+                                </p>
+                            </div>
+                            <div className="mt-8 pt-6 border-t border-gray-200">
+                                <p className="text-gray-900 font-semibold text-lg mb-2">
+                                    "Quality furniture isn't just about materials—it's about the care and skill put into every joint, every finish."
+                                </p>
+                                <p className="text-gray-500 italic">— Venkatesh, Founder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* CTA Section */}
             <section className="py-24 relative overflow-hidden">
                 <div className="absolute inset-0">
@@ -207,7 +258,7 @@ const Home = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-slate-900/80"></div>
                 </div>
                 <div className="container text-center relative z-10">
-                    <h2 className="heading-xl mb-6">Need a Custom Design?</h2>
+                    <h2 className="heading-xl text-white mb-6">Need a Custom Design?</h2>
                     <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto font-light">
                         We specialize in bringing your unique ideas to life. Stick to your style, not just what's in stock.
                     </p>
