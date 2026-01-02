@@ -119,16 +119,59 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary (will use .env variables if present)
+if (process.env.CLOUDINARY_CLOUD_NAME) {
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+    console.log('Cloudinary configuration found and applied.');
+}
+
+// Helper to handle image upload
+async function handleImageUpload(imageString) {
+    // 1. If no image or not base64, return as is (could be existing URL)
+    if (!imageString || !imageString.startsWith('data:')) {
+        return imageString;
+    }
+
+    // 2. If Cloudinary is configured, upload there
+    if (process.env.CLOUDINARY_CLOUD_NAME) {
+        try {
+            const uploadResult = await cloudinary.uploader.upload(imageString, {
+                folder: 'kp-furniture',
+                resource_type: 'image'
+            });
+            console.log('Image uploaded to Cloudinary:', uploadResult.secure_url);
+            return uploadResult.secure_url;
+        } catch (error) {
+            console.error('Cloudinary upload failed:', error);
+            // Fallback: return original string (save to DB) or throw
+            throw new Error('Image upload failed');
+        }
+    }
+
+    // 3. Fallback: Save Base64 to Database (Current Method)
+    return imageString;
+}
+
 // Add Product
 app.post('/api/products', async (req, res) => {
-    const { name, category, subCategory, description, price, image } = req.body;
     try {
+        const { name, category, subCategory, description, price, image } = req.body;
+
+        // Process image (Upload to Cloudinary OR keep as Base64)
+        const diffOptimizedImage = await handleImageUpload(image);
+
         const query = `
       INSERT INTO products (name, category, sub_category, description, price, image)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
-        const values = [name, category, subCategory, description, price, image];
+        const values = [name, category, subCategory, description, price, diffOptimizedImage];
         const result = await pool.query(query, values);
 
         const newProduct = result.rows[0];
@@ -143,7 +186,7 @@ app.post('/api/products', async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: error.message }); // Image might be too large for some DB configs
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -156,16 +199,19 @@ app.put('/api/products/:id', async (req, res) => {
         let query;
         let values;
 
-        if (image && image.startsWith('data:')) {
+        // Process image (Upload to Cloudinary OR keep as Base64/Url)
+        const finalImage = await handleImageUpload(image);
+
+        if (finalImage) {
             query = `
         UPDATE products 
         SET name = $1, category = $2, sub_category = $3, description = $4, price = $5, image = $6
         WHERE id = $7
         RETURNING *
       `;
-            values = [name, category, subCategory, description, price, image, id];
+            values = [name, category, subCategory, description, price, finalImage, id];
         } else {
-            // If image is not a new base64 string, don't update it (or handle it differently)
+            // Fallback for null image
             query = `
         UPDATE products 
         SET name = $1, category = $2, sub_category = $3, description = $4, price = $5
