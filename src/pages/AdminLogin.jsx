@@ -7,14 +7,23 @@ const AdminLogin = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // In a real app, never hardcode passwords. 
-        // This is a simplified demo for the 'No Database' request.
-        if (password === 'admin123') {
-            navigate('/admin/dashboard');
-        } else {
-            setError('Invalid Password');
+        try {
+            const response = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                navigate('/admin/dashboard');
+            } else {
+                setError(data.error || 'Invalid Password');
+            }
+        } catch (err) {
+            setError('Connection error. Please try again.');
         }
     };
 

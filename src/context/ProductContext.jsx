@@ -11,59 +11,75 @@ export const ProductProvider = ({ children }) => {
     const [products, setProducts] = useState(initialProducts);
     const [categories, setCategories] = useState(initialCategories);
 
-    // Check if we're on admin routes
-    const isAdminRoute = () => {
-        return window.location.pathname.startsWith('/admin');
-    };
-
-    // Initialize from LocalStorage ONLY on admin pages
+    // Fetch products from API on mount
     useEffect(() => {
-        // Only load from localStorage if on admin routes
-        if (isAdminRoute()) {
-            const savedProducts = localStorage.getItem('kp_furniture_products');
-            if (savedProducts) {
-                try {
-                    const parsed = JSON.parse(savedProducts);
-                    // Basic validation: ensure it's an array
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        setProducts(parsed);
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('/api/products');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        setProducts(data);
                     }
-                } catch (e) {
-                    console.error("Failed to load products from storage", e);
                 }
+            } catch (error) {
+                console.error("Failed to fetch products:", error);
             }
-        } else {
-            // For regular customers, always use products.js
-            setProducts(initialProducts);
-        }
+        };
+
+        fetchProducts();
     }, []);
 
-    // Function to update a product (used by Admin Panel)
-    const updateProduct = (updatedProduct) => {
-        const newProducts = products.map(p =>
-            p.id === updatedProduct.id ? updatedProduct : p
-        );
-        setProducts(newProducts);
-        // Save to local storage so it persists on reload (for admin only)
-        localStorage.setItem('kp_furniture_products', JSON.stringify(newProducts));
+    // Function to update a product
+    const updateProduct = async (updatedProduct) => {
+        try {
+            const response = await fetch(`/api/products/${updatedProduct.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedProduct)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setProducts(products.map(p => p.id === data.id ? data : p));
+            }
+        } catch (error) {
+            console.error("Failed to update product:", error);
+        }
     };
 
     // Function to add a new product
-    const addProduct = (newProduct) => {
-        // Generate new ID by finding the max ID and adding 1
-        const maxId = products.reduce((max, p) => Math.max(max, p.id), 0);
-        const productWithId = { ...newProduct, id: maxId + 1 };
-        const newProducts = [...products, productWithId];
-        setProducts(newProducts);
-        localStorage.setItem('kp_furniture_products', JSON.stringify(newProducts));
-        return productWithId; // Return the created product with its ID
+    const addProduct = async (newProduct) => {
+        try {
+            const response = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newProduct)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setProducts([data, ...products]); // Add to top
+                return data;
+            }
+        } catch (error) {
+            console.error("Failed to add product:", error);
+        }
     };
 
     // Function to delete a product
-    const deleteProduct = (productId) => {
-        const newProducts = products.filter(p => p.id !== productId);
-        setProducts(newProducts);
-        localStorage.setItem('kp_furniture_products', JSON.stringify(newProducts));
+    const deleteProduct = async (productId) => {
+        try {
+            const response = await fetch(`/api/products/${productId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                setProducts(products.filter(p => p.id !== productId));
+            }
+        } catch (error) {
+            console.error("Failed to delete product:", error);
+        }
     };
 
     return (
