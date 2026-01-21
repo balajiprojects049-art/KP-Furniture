@@ -35,17 +35,20 @@ app.get('/api/seed-db', async (req, res) => {
             const imageToStore = product.image || (product.images && product.images.length > 0 ? product.images[0] : '');
 
             const query = `
-          INSERT INTO products (id, name, category, sub_category, description, price, image)
-          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          INSERT INTO products (id, name, category, sub_category, description, price, image_1, image_2, image_3, image_4)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         `;
             const values = [
                 product.id,
                 product.name,
                 product.category,
-                product.subCategory, // Note: frontend uses subCategory, DB uses sub_category. 
+                product.subCategory,
                 product.description,
                 product.price,
-                imageToStore
+                imageToStore, // image_1
+                null,         // image_2
+                null,         // image_3
+                null          // image_4
             ];
 
             await pool.query(query, values);
@@ -74,7 +77,10 @@ app.get('/api/init-db', async (req, res) => {
         sub_category VARCHAR(100),
         description TEXT,
         price VARCHAR(50),
-        image TEXT,
+        image_1 TEXT,
+        image_2 TEXT,
+        image_3 TEXT,
+        image_4 TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
@@ -83,6 +89,69 @@ app.get('/api/init-db', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
+    }
+});
+
+// SAFE MIGRATION: Add 4-image support WITHOUT deleting old data
+app.get('/api/migrate-to-4-images', async (req, res) => {
+    try {
+        console.log('Starting SAFE migration to 4-image structure...');
+
+        // Step 1: Check if migration is needed
+        const checkColumns = await pool.query(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'products' AND column_name IN ('image_1', 'image_2', 'image_3', 'image_4', 'image')
+        `);
+
+        const existingColumns = checkColumns.rows.map(row => row.column_name);
+        console.log('Existing columns:', existingColumns);
+
+        // Step 2: Add new columns if they don't exist
+        const columnsToAdd = ['image_1', 'image_2', 'image_3', 'image_4'];
+        let addedColumns = [];
+
+        for (const col of columnsToAdd) {
+            if (!existingColumns.includes(col)) {
+                await pool.query(`ALTER TABLE products ADD COLUMN ${col} TEXT`);
+                addedColumns.push(col);
+                console.log(`✅ Added column: ${col}`);
+            } else {
+                console.log(`ℹ️  Column ${col} already exists`);
+            }
+        }
+
+        // Step 3: Migrate data from 'image' to 'image_1' (if 'image' column exists)
+        if (existingColumns.includes('image')) {
+            const migrateResult = await pool.query(`
+                UPDATE products 
+                SET image_1 = image 
+                WHERE image IS NOT NULL AND (image_1 IS NULL OR image_1 = '')
+            `);
+            console.log(`✅ Migrated ${migrateResult.rowCount} rows from 'image' to 'image_1'`);
+        }
+
+        // Step 4: Count total products
+        const countResult = await pool.query('SELECT COUNT(*) FROM products');
+        const totalProducts = countResult.rows[0].count;
+
+        res.json({
+            success: true,
+            message: '✅ SAFE migration completed successfully!',
+            details: {
+                columnsAdded: addedColumns,
+                totalProducts: totalProducts,
+                note: 'Old "image" column kept as backup. All data is safe!'
+            }
+        });
+
+    } catch (error) {
+        console.error('Migration error:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            note: 'Migration failed. No data was deleted.'
+        });
     }
 });
 
@@ -103,15 +172,21 @@ app.get('/api/products', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM products ORDER BY id DESC');
         // Transform keys to match frontend expectation (camelCase)
-        const products = result.rows.map(row => ({
-            id: row.id,
-            name: row.name,
-            category: row.category,
-            subCategory: row.sub_category,
-            description: row.description,
-            price: row.price,
-            image: row.image
-        }));
+        const products = result.rows.map(row => {
+            // Combine all images into an array, filter out nulls
+            const images = [row.image_1, row.image_2, row.image_3, row.image_4].filter(img => img);
+
+            return {
+                id: row.id,
+                name: row.name,
+                category: row.category,
+                subCategory: row.sub_category,
+                description: row.description,
+                price: row.price,
+                image: images[0] || '', // First image as main
+                images: images // All images as array
+            };
+        });
         res.json(products);
     } catch (error) {
         console.error(error);
@@ -161,20 +236,25 @@ async function handleImageUpload(imageString) {
 // Add Product
 app.post('/api/products', async (req, res) => {
     try {
-        const { name, category, subCategory, description, price, image } = req.body;
+        const { name, category, subCategory, description, price, image_1, image_2, image_3, image_4 } = req.body;
 
-        // Process image (Upload to Cloudinary OR keep as Base64)
-        const diffOptimizedImage = await handleImageUpload(image);
+        // Process each image (Upload to Cloudinary OR keep as Base64)
+        const processedImage1 = await handleImageUpload(image_1);
+        const processedImage2 = await handleImageUpload(image_2);
+        const processedImage3 = await handleImageUpload(image_3);
+        const processedImage4 = await handleImageUpload(image_4);
 
         const query = `
-      INSERT INTO products (name, category, sub_category, description, price, image)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO products (name, category, sub_category, description, price, image_1, image_2, image_3, image_4)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `;
-        const values = [name, category, subCategory, description, price, diffOptimizedImage];
+        const values = [name, category, subCategory, description, price, processedImage1, processedImage2, processedImage3, processedImage4];
         const result = await pool.query(query, values);
 
         const newProduct = result.rows[0];
+        const images = [newProduct.image_1, newProduct.image_2, newProduct.image_3, newProduct.image_4].filter(img => img);
+
         res.json({
             id: newProduct.id,
             name: newProduct.name,
@@ -182,7 +262,8 @@ app.post('/api/products', async (req, res) => {
             subCategory: newProduct.sub_category,
             description: newProduct.description,
             price: newProduct.price,
-            image: newProduct.image
+            image: images[0] || '',
+            images: images
         });
     } catch (error) {
         console.error(error);
@@ -193,33 +274,23 @@ app.post('/api/products', async (req, res) => {
 // Update Product
 app.put('/api/products/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, category, subCategory, description, price, image } = req.body;
+    const { name, category, subCategory, description, price, image_1, image_2, image_3, image_4 } = req.body;
 
     try {
-        let query;
-        let values;
+        // Process each image (Upload to Cloudinary OR keep as Base64/Url)
+        const processedImage1 = await handleImageUpload(image_1);
+        const processedImage2 = await handleImageUpload(image_2);
+        const processedImage3 = await handleImageUpload(image_3);
+        const processedImage4 = await handleImageUpload(image_4);
 
-        // Process image (Upload to Cloudinary OR keep as Base64/Url)
-        const finalImage = await handleImageUpload(image);
-
-        if (finalImage) {
-            query = `
+        const query = `
         UPDATE products 
-        SET name = $1, category = $2, sub_category = $3, description = $4, price = $5, image = $6
-        WHERE id = $7
+        SET name = $1, category = $2, sub_category = $3, description = $4, price = $5, 
+            image_1 = $6, image_2 = $7, image_3 = $8, image_4 = $9
+        WHERE id = $10
         RETURNING *
       `;
-            values = [name, category, subCategory, description, price, finalImage, id];
-        } else {
-            // Fallback for null image
-            query = `
-        UPDATE products 
-        SET name = $1, category = $2, sub_category = $3, description = $4, price = $5
-        WHERE id = $6
-        RETURNING *
-      `;
-            values = [name, category, subCategory, description, price, id];
-        }
+        const values = [name, category, subCategory, description, price, processedImage1, processedImage2, processedImage3, processedImage4, id];
 
         const result = await pool.query(query, values);
 
@@ -228,6 +299,8 @@ app.put('/api/products/:id', async (req, res) => {
         }
 
         const updated = result.rows[0];
+        const images = [updated.image_1, updated.image_2, updated.image_3, updated.image_4].filter(img => img);
+
         res.json({
             id: updated.id,
             name: updated.name,
@@ -235,7 +308,8 @@ app.put('/api/products/:id', async (req, res) => {
             subCategory: updated.sub_category,
             description: updated.description,
             price: updated.price,
-            image: updated.image
+            image: images[0] || '',
+            images: images
         });
     } catch (error) {
         console.error(error);

@@ -7,7 +7,8 @@ export const categories = [
       { id: 'l-shape', name: 'L-Shape' },
       { id: 'u-shape', name: 'U-Shape' },
       { id: '3-1-1', name: '3+1+1 Sets' },
-      { id: 'longer', name: '3+ Longer' }
+      { id: 'longer', name: '3+ Longer' },
+      { id: 'sofa-cum-bed', name: 'Sofa Cum Bed' }
     ]
   },
   {
@@ -44,7 +45,7 @@ export const categories = [
     ]
   },
   { id: 'visitor-chairs', name: 'Visitor Chairs' },
-  { id: 'teapoys', name: 'Teapoys' },
+  { id: 'teepay', name: 'Teepay' },
   { id: 'boss-chairs', name: 'Boss Chairs' },
 ];
 
@@ -788,11 +789,11 @@ export const products = [
     description: "Professional mid-back visitor chair with mesh support and chrome cantilever base.",
     price: "Custom"
   },
-  // Teapoys
+  // Teepay
   {
     id: 97,
     name: "Luxury Marble Top Center Table",
-    category: "teapoys",
+    category: "teepay",
     image: "/products/teapoy-1.jpg",
     description: "Premium marble-top center table with storage cabinet, perfect for modern living rooms.",
     price: "Custom"
@@ -800,23 +801,23 @@ export const products = [
   {
     id: 98,
     name: "Designer Dual-Level Coffee Table",
-    category: "teapoys",
+    category: "teepay",
     image: "/products/teapoy-2.jpg",
-    description: "Elegant dual-level teapoy with marble tops and modern pedestal base.",
+    description: "Elegant dual-level teepay with marble tops and modern pedestal base.",
     price: "Custom"
   },
   {
     id: 99,
-    name: "Round Marble Teapoy Set",
-    category: "teapoys",
+    name: "Round Marble Teepay Set",
+    category: "teepay",
     image: "/products/teapoy-3.jpg",
     description: "Sophisticated round center table set with marble finish and integrated seating poufs.",
     price: "Custom"
   },
   {
     id: 100,
-    name: "Contemporary Black & White Teapoy",
-    category: "teapoys",
+    name: "Contemporary Black & White Teepay",
+    category: "teepay",
     image: "/products/teapoy-4.jpg",
     description: "Modern center table set with contrasting black and white marble tops and side table.",
     price: "Custom"
@@ -824,7 +825,7 @@ export const products = [
   {
     id: 101,
     name: "Asymmetric Marble Coffee Table",
-    category: "teapoys",
+    category: "teepay",
     image: "/products/teapoy-5.jpg",
     description: "Unique dual-circle center table with white and black marble tops on modern base.",
     price: "Custom"
@@ -832,15 +833,15 @@ export const products = [
   {
     id: 102,
     name: "Classic Marble Storage Center Table",
-    category: "teapoys",
+    category: "teepay",
     image: "/products/teapoy-6.jpg",
     description: "Elegant white marble-top center table with copper-tone storage drawers.",
     price: "Custom"
   },
   {
     id: 103,
-    name: "Natural Stone Teapoy with Drawers",
-    category: "teapoys",
+    name: "Natural Stone Teepay with Drawers",
+    category: "teepay",
     image: "/products/teapoy-7.jpg",
     description: "Premium natural stone center table with white storage drawers and modern design.",
     price: "Custom"
@@ -848,15 +849,15 @@ export const products = [
   {
     id: 104,
     name: "Granite Effect Center Table",
-    category: "teapoys",
+    category: "teepay",
     image: "/products/teapoy-8.jpg",
-    description: "Stylish granite-effect marble teapoy with contrasting white storage cabinets.",
+    description: "Stylish granite-effect marble teepay with contrasting white storage cabinets.",
     price: "Custom"
   },
   {
     id: 105,
-    name: "Designer Blue Marble Teapoy",
-    category: "teapoys",
+    name: "Designer Blue Marble Teepay",
+    category: "teepay",
     image: "/products/teapoy-9.jpg",
     description: "Luxurious blue-tinted marble center table with glossy black storage cabinet.",
     price: "Custom"
@@ -864,9 +865,9 @@ export const products = [
   {
     id: 106,
     name: "Statement Black Marble Center Table",
-    category: "teapoys",
+    category: "teepay",
     image: "/products/teapoy-10.jpg",
-    description: "Bold black marble-top teapoy with white storage drawers for contemporary living rooms.",
+    description: "Bold black marble-top teepay with white storage drawers for contemporary living rooms.",
     price: "Custom"
   },
   // Boss Chairs

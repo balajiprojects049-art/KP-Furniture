@@ -12,12 +12,25 @@ const AdminPanel = () => {
         name: '',
         category: 'sofas',
         subCategory: '',
-        image: '',
+        image_1: '',
+        image_2: '',
+        image_3: '',
+        image_4: '',
         description: '',
         price: 'Custom'
     });
-    const fileInputRef = useRef(null);
-    const newProductFileInputRef = useRef(null);
+
+    // Refs for 4 image inputs (edit mode)
+    const fileInputRef1 = useRef(null);
+    const fileInputRef2 = useRef(null);
+    const fileInputRef3 = useRef(null);
+    const fileInputRef4 = useRef(null);
+
+    // Refs for 4 image inputs (new product mode)
+    const newProductFileInputRef1 = useRef(null);
+    const newProductFileInputRef2 = useRef(null);
+    const newProductFileInputRef3 = useRef(null);
+    const newProductFileInputRef4 = useRef(null);
 
     // Custom modal states
     const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
@@ -41,35 +54,8 @@ const AdminPanel = () => {
         setTimeout(() => setNotification({ show: false, message: '', type: 'success' }), 3000);
     };
 
-    // Compress and convert image to Base64
-    const handleImageUpload = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-                // Resize logic to prevent LocalStorage quota overflow
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800;
-                const scaleSize = MAX_WIDTH / img.width;
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); // 70% quality
-                setEditForm({ ...editForm, image: compressedBase64 });
-            };
-            img.src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    };
-
-    // Handle new product image upload
-    const handleNewProductImageUpload = (e) => {
+    // Generic image upload handler for edit mode
+    const handleImageUpload = (imageNumber) => (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -87,7 +73,33 @@ const AdminPanel = () => {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                setNewProductForm({ ...newProductForm, image: compressedBase64 });
+                setEditForm({ ...editForm, [`image_${imageNumber}`]: compressedBase64 });
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // Generic image upload handler for new product mode
+    const handleNewProductImageUpload = (imageNumber) => (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800;
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                setNewProductForm({ ...newProductForm, [`image_${imageNumber}`]: compressedBase64 });
             };
             img.src = event.target.result;
         };
@@ -96,8 +108,8 @@ const AdminPanel = () => {
 
     // Handle adding new product
     const handleAddProduct = () => {
-        if (!newProductForm.name || !newProductForm.image || !newProductForm.description) {
-            setNotification({ show: true, message: 'Please fill in all required fields', type: 'error' });
+        if (!newProductForm.name || !newProductForm.image_1 || !newProductForm.description) {
+            setNotification({ show: true, message: 'Please fill in all required fields (at least Image 1 is required)', type: 'error' });
             setTimeout(() => setNotification({ show: false, message: '', type: 'error' }), 3000);
             return;
         }
@@ -108,7 +120,10 @@ const AdminPanel = () => {
             name: '',
             category: 'sofas',
             subCategory: '',
-            image: '',
+            image_1: '',
+            image_2: '',
+            image_3: '',
+            image_4: '',
             description: '',
             price: 'Custom'
         });
@@ -196,34 +211,46 @@ const AdminPanel = () => {
                                             />
                                         </div>
 
-                                        {/* Image Upload Input */}
+                                        {/* Image Upload Inputs - 4 Images */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
-                                            <div className="flex items-center gap-4">
-                                                <input
-                                                    type="file"
-                                                    ref={fileInputRef}
-                                                    onChange={handleImageUpload}
-                                                    accept="image/*"
-                                                    className="hidden"
-                                                />
-                                                <button
-                                                    onClick={() => fileInputRef.current.click()}
-                                                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
-                                                >
-                                                    <Upload size={16} />
-                                                    {editForm.image && editForm.image.startsWith('data:') ? 'Change Image' : 'Upload New Image'}
-                                                </button>
-
-                                                {/* Mini preview of selected image */}
-                                                {editForm.image && (
-                                                    <div className="h-12 w-12 rounded overflow-hidden border border-gray-200">
-                                                        <img src={editForm.image} alt="Preview" className="w-full h-full object-cover" />
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Product Images (Image 1 is required)
+                                            </label>
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                {[1, 2, 3, 4].map(num => (
+                                                    <div key={num} className="flex flex-col gap-2">
+                                                        <label className="text-xs font-medium text-gray-600">
+                                                            Image {num} {num === 1 && <span className="text-red-500">*</span>}
+                                                        </label>
+                                                        <input
+                                                            type="file"
+                                                            ref={eval(`fileInputRef${num}`)}
+                                                            onChange={handleImageUpload(num)}
+                                                            accept="image/*"
+                                                            className="hidden"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => eval(`fileInputRef${num}`).current?.click()}
+                                                            className="flex items-center justify-center gap-1 px-2 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-xs font-medium transition-colors"
+                                                        >
+                                                            <Upload size={14} />
+                                                            {editForm[`image_${num}`] ? 'Change' : 'Upload'}
+                                                        </button>
+                                                        {editForm[`image_${num}`] && (
+                                                            <div className="h-20 w-full rounded overflow-hidden border-2 border-blue-500">
+                                                                <img
+                                                                    src={editForm[`image_${num}`]}
+                                                                    alt={`Preview ${num}`}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                )}
+                                                ))}
                                             </div>
                                             <p className="text-xs text-gray-500 mt-2">
-                                                Supported formats: JPG, PNG. Image will be auto-resized to optimize storage.
+                                                Supported formats: JPG, PNG. Images will be auto-resized to optimize storage.
                                             </p>
                                         </div>
 
@@ -344,35 +371,46 @@ const AdminPanel = () => {
                                     </div>
                                 )}
 
-                                {/* Image Upload */}
+                                {/* Image Upload - 4 Images */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Product Image <span className="text-red-500">*</span>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Product Images (Image 1 is required) <span className="text-red-500">*</span>
                                     </label>
-                                    <div className="flex items-center gap-4">
-                                        <input
-                                            type="file"
-                                            ref={newProductFileInputRef}
-                                            onChange={handleNewProductImageUpload}
-                                            accept="image/*"
-                                            className="hidden"
-                                        />
-                                        <button
-                                            onClick={() => newProductFileInputRef.current.click()}
-                                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
-                                        >
-                                            <Upload size={16} />
-                                            {newProductForm.image ? 'Change Image' : 'Upload Image'}
-                                        </button>
-
-                                        {newProductForm.image && (
-                                            <div className="h-16 w-16 rounded overflow-hidden border border-gray-200">
-                                                <img src={newProductForm.image} alt="Preview" className="w-full h-full object-cover" />
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {[1, 2, 3, 4].map(num => (
+                                            <div key={num} className="flex flex-col gap-2">
+                                                <label className="text-xs font-medium text-gray-600">
+                                                    Image {num} {num === 1 && <span className="text-red-500">*</span>}
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    ref={eval(`newProductFileInputRef${num}`)}
+                                                    onChange={handleNewProductImageUpload(num)}
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => eval(`newProductFileInputRef${num}`).current?.click()}
+                                                    className="flex items-center justify-center gap-1 px-2 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-xs font-medium transition-colors"
+                                                >
+                                                    <Upload size={14} />
+                                                    {newProductForm[`image_${num}`] ? 'Change' : 'Upload'}
+                                                </button>
+                                                {newProductForm[`image_${num}`] && (
+                                                    <div className="h-20 w-full rounded overflow-hidden border-2 border-blue-500">
+                                                        <img
+                                                            src={newProductForm[`image_${num}`]}
+                                                            alt={`Preview ${num}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
+                                        ))}
                                     </div>
                                     <p className="text-xs text-gray-500 mt-2">
-                                        Supported formats: JPG, PNG. Image will be auto-resized.
+                                        Supported formats: JPG, PNG. Images will be auto-resized.
                                     </p>
                                 </div>
 
@@ -414,8 +452,8 @@ const AdminPanel = () => {
                 {notification.show && (
                     <div className="fixed top-4 right-4 z-50 animate-fade-in">
                         <div className={`px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 ${notification.type === 'success'
-                                ? 'bg-green-600 text-white'
-                                : 'bg-red-600 text-white'
+                            ? 'bg-green-600 text-white'
+                            : 'bg-red-600 text-white'
                             }`}>
                             {notification.type === 'success' ? (
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
