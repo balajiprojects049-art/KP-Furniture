@@ -20,17 +20,11 @@ const AdminPanel = () => {
         price: 'Custom'
     });
 
-    // Refs for 4 image inputs (edit mode)
-    const fileInputRef1 = useRef(null);
-    const fileInputRef2 = useRef(null);
-    const fileInputRef3 = useRef(null);
-    const fileInputRef4 = useRef(null);
+    // Refs for 4 image inputs (edit mode) - using arrays
+    const editFileInputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
-    // Refs for 4 image inputs (new product mode)
-    const newProductFileInputRef1 = useRef(null);
-    const newProductFileInputRef2 = useRef(null);
-    const newProductFileInputRef3 = useRef(null);
-    const newProductFileInputRef4 = useRef(null);
+    // Refs for 4 image inputs (new product mode) - using arrays
+    const newProductFileInputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
     // Custom modal states
     const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
@@ -217,21 +211,21 @@ const AdminPanel = () => {
                                                 Product Images (Image 1 is required)
                                             </label>
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                                {[1, 2, 3, 4].map(num => (
+                                                {[1, 2, 3, 4].map((num, index) => (
                                                     <div key={num} className="flex flex-col gap-2">
                                                         <label className="text-xs font-medium text-gray-600">
                                                             Image {num} {num === 1 && <span className="text-red-500">*</span>}
                                                         </label>
                                                         <input
                                                             type="file"
-                                                            ref={eval(`fileInputRef${num}`)}
+                                                            ref={editFileInputRefs[index]}
                                                             onChange={handleImageUpload(num)}
                                                             accept="image/*"
                                                             className="hidden"
                                                         />
                                                         <button
                                                             type="button"
-                                                            onClick={() => eval(`fileInputRef${num}`).current?.click()}
+                                                            onClick={() => editFileInputRefs[index].current?.click()}
                                                             className="flex items-center justify-center gap-1 px-2 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-xs font-medium transition-colors"
                                                         >
                                                             <Upload size={14} />
@@ -377,21 +371,21 @@ const AdminPanel = () => {
                                         Product Images (Image 1 is required) <span className="text-red-500">*</span>
                                     </label>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        {[1, 2, 3, 4].map(num => (
+                                        {[1, 2, 3, 4].map((num, index) => (
                                             <div key={num} className="flex flex-col gap-2">
                                                 <label className="text-xs font-medium text-gray-600">
                                                     Image {num} {num === 1 && <span className="text-red-500">*</span>}
                                                 </label>
                                                 <input
                                                     type="file"
-                                                    ref={eval(`newProductFileInputRef${num}`)}
+                                                    ref={newProductFileInputRefs[index]}
                                                     onChange={handleNewProductImageUpload(num)}
                                                     accept="image/*"
                                                     className="hidden"
                                                 />
                                                 <button
                                                     type="button"
-                                                    onClick={() => eval(`newProductFileInputRef${num}`).current?.click()}
+                                                    onClick={() => newProductFileInputRefs[index].current?.click()}
                                                     className="flex items-center justify-center gap-1 px-2 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-xs font-medium transition-colors"
                                                 >
                                                     <Upload size={14} />
